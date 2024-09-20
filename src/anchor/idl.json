@@ -1,0 +1,820 @@
+{
+  "address": "3dnBfuMPHW52smosEsJwsnLGCR56DrphyUG68GqAcVxb",
+  "metadata": {
+    "name": "pont_network",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "add_data_account",
+      "discriminator": [
+        175,
+        22,
+        181,
+        215,
+        91,
+        149,
+        30,
+        107
+      ],
+      "accounts": [
+        {
+          "name": "ship_account",
+          "writable": true
+        },
+        {
+          "name": "data_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ship"
+              },
+              {
+                "kind": "account",
+                "path": "ship_account.data_accounts",
+                "account": "ShipAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "external_observers_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  111,
+                  98,
+                  115,
+                  101,
+                  114,
+                  118,
+                  101,
+                  114,
+                  115,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "data_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ship",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "ship_account"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "external_observers",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "external_observers_keys",
+          "type": {
+            "vec": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        },
+        {
+          "name": "external_observers_x25519_pks",
+          "type": {
+            "vec": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "add_data_fingerprint",
+      "discriminator": [
+        149,
+        75,
+        45,
+        254,
+        103,
+        59,
+        183,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "data_account",
+          "writable": true
+        },
+        {
+          "name": "ship",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "data_account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "ciphertext",
+          "type": "bytes"
+        },
+        {
+          "name": "tag",
+          "type": "bytes"
+        },
+        {
+          "name": "iv",
+          "type": "bytes"
+        },
+        {
+          "name": "ciphertext_timestamp",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "add_external_observer",
+      "discriminator": [
+        141,
+        103,
+        112,
+        218,
+        133,
+        146,
+        243,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "data_account"
+        },
+        {
+          "name": "external_observers_account",
+          "writable": true
+        },
+        {
+          "name": "ship_account"
+        },
+        {
+          "name": "ship_management",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "ship_account"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "external_observer_to_be_approved",
+          "type": "pubkey"
+        },
+        {
+          "name": "external_observer_encrypted_master_key",
+          "type": {
+            "array": [
+              "u8",
+              128
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "add_multiple_data_fingerprints",
+      "discriminator": [
+        166,
+        98,
+        101,
+        186,
+        10,
+        0,
+        167,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "data_account",
+          "writable": true
+        },
+        {
+          "name": "ship",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "data_account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "ciphertexts",
+          "type": {
+            "vec": "bytes"
+          }
+        },
+        {
+          "name": "tags",
+          "type": {
+            "vec": "bytes"
+          }
+        },
+        {
+          "name": "ivs",
+          "type": {
+            "vec": "bytes"
+          }
+        },
+        {
+          "name": "ciphertext_timestamps",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "external_observer_request",
+      "discriminator": [
+        45,
+        49,
+        179,
+        150,
+        54,
+        164,
+        22,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "external_observers_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  111,
+                  98,
+                  115,
+                  101,
+                  114,
+                  118,
+                  101,
+                  114,
+                  115,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "data_account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "data_account"
+        },
+        {
+          "name": "external_observer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "external_observer_x25519_pk",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "initialize_ship",
+      "discriminator": [
+        164,
+        242,
+        98,
+        16,
+        219,
+        10,
+        77,
+        221
+      ],
+      "accounts": [
+        {
+          "name": "ship_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  112,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "ship"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ship_management",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "ship",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "reallocate_data_account",
+      "discriminator": [
+        46,
+        99,
+        68,
+        132,
+        145,
+        88,
+        147,
+        55
+      ],
+      "accounts": [
+        {
+          "name": "data_account",
+          "writable": true
+        },
+        {
+          "name": "ship",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "data_account"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "DataAccount",
+      "discriminator": [
+        85,
+        240,
+        182,
+        158,
+        76,
+        7,
+        18,
+        233
+      ]
+    },
+    {
+      "name": "ExternalObserversAccount",
+      "discriminator": [
+        170,
+        131,
+        13,
+        175,
+        60,
+        141,
+        65,
+        240
+      ]
+    },
+    {
+      "name": "ShipAccount",
+      "discriminator": [
+        65,
+        113,
+        205,
+        3,
+        159,
+        182,
+        103,
+        244
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "DataAccountInitialized",
+      "discriminator": [
+        103,
+        159,
+        255,
+        119,
+        75,
+        199,
+        99,
+        80
+      ]
+    },
+    {
+      "name": "DataFingerprintAdded",
+      "discriminator": [
+        166,
+        3,
+        163,
+        142,
+        228,
+        114,
+        122,
+        15
+      ]
+    },
+    {
+      "name": "ExternalObserverAdded",
+      "discriminator": [
+        62,
+        35,
+        223,
+        229,
+        51,
+        255,
+        154,
+        103
+      ]
+    },
+    {
+      "name": "ExternalObserverRequested",
+      "discriminator": [
+        58,
+        191,
+        60,
+        78,
+        153,
+        241,
+        91,
+        5
+      ]
+    },
+    {
+      "name": "ShipInitialized",
+      "discriminator": [
+        50,
+        7,
+        29,
+        232,
+        239,
+        77,
+        28,
+        162
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ExternalObserverAlreadyRequested"
+    }
+  ],
+  "types": [
+    {
+      "name": "DataAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ship",
+            "type": "pubkey"
+          },
+          {
+            "name": "fingerprints",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Fingerprint"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DataAccountInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ship",
+            "type": "pubkey"
+          },
+          {
+            "name": "data_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_observers",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "external_observers_keys",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  128
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DataFingerprintAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ship",
+            "type": "pubkey"
+          },
+          {
+            "name": "fingerprint",
+            "type": {
+              "defined": {
+                "name": "Fingerprint"
+              }
+            }
+          },
+          {
+            "name": "ciphertext",
+            "type": "bytes"
+          },
+          {
+            "name": "tag",
+            "type": "bytes"
+          },
+          {
+            "name": "iv",
+            "type": "bytes"
+          },
+          {
+            "name": "ciphertext_timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "data_account",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExternalObserverAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_observer",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_observers_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "ship_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "ship_management",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_observer_encrypted_master_key",
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExternalObserverRequested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_observer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExternalObserversAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "unapproved_external_observers",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "unapproved_external_observers_x25519_pks",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "external_observers",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "external_observers_x25519_pks",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "external_observers_master_keys",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  128
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fingerprint",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShipAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ship",
+            "type": "pubkey"
+          },
+          {
+            "name": "ship_management",
+            "type": "pubkey"
+          },
+          {
+            "name": "data_accounts",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShipInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ship",
+            "type": "pubkey"
+          },
+          {
+            "name": "ship_management",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}
