@@ -17,10 +17,21 @@ export default function ViewObservers() {
     const {sendTransaction, publicKey} = useWallet();
     const { connection } = useConnection();
     const { dataAccountAddress, shipAccountAddress } = location.state as { dataAccountAddress: string, shipAccountAddress: string };
-    const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([]);
-    const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([]);
+    // const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([]);
+    // const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([]);
     const [externalObserversAccountInfo, setExternalObserversAccountInfo] = useState<ExternalObserversAccount>();
     const [externalObserversAccountAddress, setExternalObserversAccountAddress] = useState<PublicKey>();
+    
+    // MOCK 
+    const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([
+        PublicKey.unique(),
+        PublicKey.unique(),
+        PublicKey.unique()
+    ]);
+    const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([
+        PublicKey.unique(),
+        PublicKey.unique()
+    ]);
 
     useEffect(() => {
         const fetchObservers = async () => {
@@ -45,10 +56,14 @@ export default function ViewObservers() {
             }
         };
 
-        fetchObservers();
+        // MOCK
+        // fetchObservers();
     }, [dataAccountAddress]);
 
     const handleApprove = async (observer: PublicKey) => {
+        // Mock
+        return
+
         try {
             // Add logic to approve the observer
             console.log(`Approving observer: ${observer.toString()}`);
