@@ -16,22 +16,22 @@ export default function ViewObservers() {
     const location = useLocation();
     const {sendTransaction, publicKey} = useWallet();
     const { connection } = useConnection();
-    const { dataAccountAddress, shipAccountAddress } = location.state as { dataAccountAddress: string, shipAccountAddress: string };
-    // const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([]);
-    // const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([]);
+    const { dataAccountAddress, shipAccountAddress, shipAddr } = location.state as { dataAccountAddress: string, shipAccountAddress: string, shipAddr: string };
+    const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([]);
+    const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([]);
     const [externalObserversAccountInfo, setExternalObserversAccountInfo] = useState<ExternalObserversAccount>();
     const [externalObserversAccountAddress, setExternalObserversAccountAddress] = useState<PublicKey>();
     
     // MOCK 
-    const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([
-        PublicKey.unique(),
-        PublicKey.unique(),
-        PublicKey.unique()
-    ]);
-    const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([
-        PublicKey.unique(),
-        PublicKey.unique()
-    ]);
+    // const [unapprovedObservers, setUnapprovedObservers] = useState<PublicKey[]>([
+    //     PublicKey.unique(),
+    //     PublicKey.unique(),
+    //     PublicKey.unique()
+    // ]);
+    // const [approvedObservers, setApprovedObservers] = useState<PublicKey[]>([
+    //     PublicKey.unique(),
+    //     PublicKey.unique()
+    // ]);
 
     useEffect(() => {
         const fetchObservers = async () => {
@@ -57,13 +57,36 @@ export default function ViewObservers() {
         };
 
         // MOCK
-        // fetchObservers();
+        fetchObservers();
     }, [dataAccountAddress]);
 
-    const handleApprove = async (observer: PublicKey) => {
-        // Mock
-        return
+    async function addMasterkeyToDb(masterKey: Uint8Array, shipAddr: string) {
+        // const masterKeyString = Buffer.from(masterKey).toString('base64');
+        try {
+            const response = await fetch('http://localhost:5001/api/add-masterkey', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    shipAddr,
+                    masterKey: Array.from(masterKey),
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Error: ${errorData.error}`);
+            }
+    
+            const data = await response.json();
+            console.log('Success:', data);
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    }
 
+    const handleApprove = async (observer: PublicKey) => {
         try {
             // Add logic to approve the observer
             console.log(`Approving observer: ${observer.toString()}`);
@@ -87,15 +110,26 @@ export default function ViewObservers() {
             })
             .transaction();
 
-            const txSignature = await sendTransaction(
-                tx,
-                connection,
-                {
-                    skipPreflight: true
-                }
-            );
-
-            console.log("Transaction sent with signature: ", txSignature);
+            try {
+                // Perform the Solana transaction
+                const txSignature = await sendTransaction(
+                    tx,
+                    connection,
+                    {
+                        skipPreflight: true
+                    }
+                );
+        
+                // If the transaction is successful, update the database
+                await addMasterkeyToDb(masterKey, shipAddr);
+        
+                console.log('Transaction and database update successful');
+                console.log('Transaction signature:', txSignature);
+            } catch (error) {
+                console.error('Error during atomic operation:', error);
+        
+                throw error; // Re-throw the error after handling
+            }
         } catch (error) {
             console.error("Error approving observer:", error);
         }
