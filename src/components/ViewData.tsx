@@ -256,7 +256,7 @@ export default function ViewData() {
     //     </div>
     // );
     return (
-        <div className='table-container'>
+        <div className='view-data-table-container'>
             {decryptedData.length > 0 && (
                 <table className="styled-table">
                     <thead>

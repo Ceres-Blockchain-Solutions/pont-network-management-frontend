@@ -17,9 +17,11 @@
   box-shadow: 1px 1px 8px 3px rgba(42, 84, 133, 0.12);
   height: min-content;
   width: 100%;
-  max-width: 640px;
+  max-width: 900px;
   margin: 100px auto;
   overflow-x: auto;
+  overflow-y: auto; /* Ensure vertical scrolling */
+  max-height: 80vh; /* Limit the height to 80% of the viewport height */
 }
 
 .table-container-lg {
@@ -98,5 +100,22 @@
   }
 }
 .red-row {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.3); /* Softer red */
+}
+.red-row:hover {
+    background-color: rgba(255, 0, 0, 0.5) !important; /* Softer red */
+}
+
+.view-data-table-container {
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 1px 1px 8px 3px rgba(42, 84, 133, 0.12);
+  height: min-content;
+  /* width: 100%; */
+  max-width: 1550px;
+  margin: 100px auto;
+  overflow-x: auto; /* Ensure horizontal scrolling */
+  overflow-y: auto; /* Ensure vertical scrolling */
+  max-height: 70vh; /* Limit the height to 80% of the viewport height */
 }

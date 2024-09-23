@@ -14,34 +14,34 @@ export default function ShipList() {
   const { connection } = useConnection();
   const { publicKey, signMessage } = useWallet();
   const navigate = useNavigate();
-  //   const [shipAccounts, setShipAccounts] = useState<
-  //     | ProgramAccount<{
-  //         ship: PublicKey;
-  //         shipManagement: PublicKey;
-  //         dataAccounts: PublicKey[];
-  //       }>[]
-  //     | null
-  //   >(null);
+  const [shipAccounts, setShipAccounts] = useState<
+    | ProgramAccount<{
+      ship: PublicKey;
+      shipManagement: PublicKey;
+      dataAccounts: PublicKey[];
+    }>[]
+    | null
+  >(null);
 
   // MOCK DATA
-  const [shipAccounts, setShipAccounts] = useState([
-    {
-      publicKey: "mockPublicKey1",
-      account: {
-        ship: "mockShip1",
-        shipManagement: "mockShipManagement1",
-        dataAccounts: ["mockDataAccount1"],
-      },
-    },
-    {
-      publicKey: "mockPublicKey2",
-      account: {
-        ship: "mockShip2",
-        shipManagement: "mockShipManagement2",
-        dataAccounts: ["mockDataAccount1"],
-      },
-    },
-  ]);
+  // const [shipAccounts, setShipAccounts] = useState([
+  //   {
+  //     publicKey: "mockPublicKey1",
+  //     account: {
+  //       ship: "mockShip1",
+  //       shipManagement: "mockShipManagement1",
+  //       dataAccounts: ["mockDataAccount1"],
+  //     },
+  //   },
+  //   {
+  //     publicKey: "mockPublicKey2",
+  //     account: {
+  //       ship: "mockShip2",
+  //       shipManagement: "mockShipManagement2",
+  //       dataAccounts: ["mockDataAccount1"],
+  //     },
+  //   },
+  // ]);
   const [hasAccess, setHasAccess] = useState([true, true]);
   const [unapprovedExternalObservers, setUnapprovedExternalObservers] =
     useState([false, false]);
@@ -98,21 +98,20 @@ export default function ShipList() {
       }
     };
 
-    //fetchAllShipAccounts();
+    fetchAllShipAccounts();
   }, [program, connection, publicKey]);
 
-    const handleViewObservers = async (dataAccountAddress: string, shipAccountAddress: string, shipAddr: string) => {
-        console.log(`View observers for ship account ${shipAccountAddress} and data account ${dataAccountAddress}`);
+  const handleViewObservers = async (dataAccountAddress: string, shipAccountAddress: string, shipAddr: string) => {
+    console.log(`View observers for ship account ${shipAccountAddress} and data account ${dataAccountAddress}`);
 
-        navigate('/view-observers', { state: { dataAccountAddress, shipAccountAddress, shipAddr } });
-    };
+    navigate('/view-observers', { state: { dataAccountAddress, shipAccountAddress, shipAddr } });
+  };
 
   const handleViewData = async (ship: string, dataAccountAddr: string) => {
     console.log(`Viewing data for ship ${ship}`);
     navigate("/view-data", { state: { ship, dataAccountAddr } });
   };
 
-  // Render the value of the counter
   return (
     <div className="main-container">
       <div className="table-container">
@@ -126,7 +125,7 @@ export default function ShipList() {
                   <td className="button-container">
                     <button
                       onClick={() =>
-                        handleViewData(account.account.ship.toString())
+                        handleViewData(account.account.ship.toString(), account.account.dataAccounts.at(-1)!.toString())
                       }
                     >
                       View data
@@ -136,7 +135,8 @@ export default function ShipList() {
                       onClick={() =>
                         handleViewObservers(
                           account.account.dataAccounts.at(-1)!.toString(),
-                          account.publicKey.toString()
+                          account.publicKey.toString(),
+                          account.account.ship.toString()
                         )
                       }
                     >
