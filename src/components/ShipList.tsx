@@ -101,22 +101,15 @@ export default function ShipList() {
     //fetchAllShipAccounts();
   }, [program, connection, publicKey]);
 
-  const handleViewObservers = async (
-    dataAccountAddress: string,
-    shipAccountAddress: string
-  ) => {
-    console.log(
-      `View observers for ship account ${shipAccountAddress} and data account ${dataAccountAddress}`
-    );
+    const handleViewObservers = async (dataAccountAddress: string, shipAccountAddress: string, shipAddr: string) => {
+        console.log(`View observers for ship account ${shipAccountAddress} and data account ${dataAccountAddress}`);
 
-    navigate("/view-observers", {
-      state: { dataAccountAddress, shipAccountAddress },
-    });
-  };
+        navigate('/view-observers', { state: { dataAccountAddress, shipAccountAddress, shipAddr } });
+    };
 
-  const handleViewData = async (ship: string) => {
+  const handleViewData = async (ship: string, dataAccountAddr: string) => {
     console.log(`Viewing data for ship ${ship}`);
-    navigate("/view-data", { state: { ship } });
+    navigate("/view-data", { state: { ship, dataAccountAddr } });
   };
 
   // Render the value of the counter
