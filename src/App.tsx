@@ -30,7 +30,7 @@ function App() {
       // if desired, manually define specific/custom wallets here (normally not required)
       // otherwise, the wallet-adapter will auto detect the wallets a user's browser has available
     ],
-    [network],
+    [network]
   );
 
   return (
@@ -38,9 +38,11 @@ function App() {
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <Router>
-            <div className="wallet-button-container">
+            <header>
+              <img src="/logo.png" alt="Veles" />
+              <img className="logo-mobile" src="/logo_sm.png" alt="Veles" />
               <WalletMultiButton />
-            </div>
+            </header>
             <Routes>
               <Route path="/" element={<ShipList />} />
               <Route path="/view-data" element={<ViewData />} />

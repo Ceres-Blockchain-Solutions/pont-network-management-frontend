@@ -1,8 +1,18 @@
-#root {
-  /* max-width: 1280px; */
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+header {
+  padding: 0 30px;
+  display: flex;
+  height: 80px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header img {
+  height: 45px;
+  width: auto;
+}
+
+.logo-mobile {
+  display: none;
 }
 
 .logo {
@@ -39,4 +49,30 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.wallet-adapter-button-trigger {
+  font-family: "Montserrat", sans-serif !important;
+}
+
+.wallet-adapter-button-trigger {
+  background-color: #6dbddc !important;
+  border-radius: 12px !important;
+  outline: none !important;
+}
+
+.wallet-adapter-button-trigger:hover {
+  background-color: #6b9bcc !important;
+}
+
+.wallet-adapter-dropdown-list-item {
+  font-family: "Montserrat", sans-serif !important;
+}
+
+.main-container {
+  height: calc(100vh - 80px);
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 0 30px;
 }
