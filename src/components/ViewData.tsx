@@ -141,50 +141,55 @@ export default function ViewData() {
         fetchMasterKey();
     }, [ship]);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await fetch('http://localhost:5000/api/data');
-                const result = await response.json();
-                console.log("Result: ", result);
-                console.log("Ship: ", ship);
-                // TODO: New Collection for each ship on backend to remove this filter
-                const resultFiltered = result.filter((item: DataItem) => item.ship === ship);
-                setEncryptedData(resultFiltered);
+    async function fetchData() {
+        try {
+            const response = await fetch('http://localhost:5000/api/data');
+            const result = await response.json();
+            console.log("Result: ", result);
+            console.log("Ship: ", ship);
+            // TODO: New Collection for each ship on backend to remove this filter
+            const resultFiltered = result.filter((item: DataItem) => item.ship === ship);
+            setEncryptedData(resultFiltered);
 
-                if (masterKeyDecrypted) {
-                    // Decrypt data
-                    console.log("resultsFiltered: ", resultFiltered);
-                    const _decryptedData: SensorData[] = resultFiltered.map((item: DataItem) => {
-                        console.log('Decrypting data: ', item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
-                        try {
-                            const decrypted = decrypt(item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
-                            return JSON.parse(decrypted);
-                        } catch (error) {
-                            console.error('Error decrypting or parsing data:', error);
-                            return getDefaultSensorData();
-                        }
-                    });
-                    console.log('Decrypted data:', _decryptedData);
-                    setDecryptedData(_decryptedData);
+            if (masterKeyDecrypted) {
+                // Decrypt data
+                console.log("resultsFiltered: ", resultFiltered);
+                const _decryptedData: SensorData[] = resultFiltered.map((item: DataItem) => {
+                    console.log('Decrypting data: ', item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
+                    try {
+                        const decrypted = decrypt(item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
+                        return JSON.parse(decrypted);
+                    } catch (error) {
+                        console.error('Error decrypting or parsing data:', error);
+                        return getDefaultSensorData();
+                    }
+                });
+                console.log('Decrypted data:', _decryptedData);
+                setDecryptedData(_decryptedData);
 
-                    // Log decrypted data
-                    _decryptedData.forEach((item, index) => {
-                        console.log(`Decrypted data for ship at index ${index}:`, item);
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
+                // Log decrypted data
+                _decryptedData.forEach((item, index) => {
+                    console.log(`Decrypted data for ship at index ${index}:`, item);
+                });
             }
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
 
+    useEffect(() => {
         if (masterKeyDecrypted) {
             fetchData();
+            const interval = setInterval(() => {
+                fetchData();
+            }, 2000);
+    
+            return () => clearInterval(interval); // Cleanup interval on component unmount
         }
-
+    
         console.log("Master Key decrypted: ", masterKeyDecrypted);
     }, [masterKeyDecrypted, ship]);
-
+    
     useEffect(() => {
         const fetchFingerprints = async () => {
             try {
