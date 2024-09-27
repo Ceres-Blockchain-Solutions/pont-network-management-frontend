@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/ShipList.css";
 import { useLocation } from "react-router-dom";
+// @ts-ignore
 import crypt from "crypto-browserify";
 import { Buffer } from "buffer";
 import { program } from "../anchor/setup";
@@ -8,32 +9,32 @@ import { Address } from '@coral-xyz/anchor';
 import { blake3 } from 'hash-wasm';
 
 interface SensorData {
-  lat: number;
-  long: number;
-  mileage: number;
-  engineLoad: number;
-  fuelLevel: number;
-  seaState: string;
-  seaSurfaceTemperature: number;
-  airTemp: number;
-  humidity: number;
-  barometricPressure: number;
-  cargoStatus: string;
-  time: number;
+    lat: number;
+    long: number;
+    mileage: number;
+    engineLoad: number;
+    fuelLevel: number;
+    seaState: string;
+    seaSurfaceTemperature: number;
+    airTemp: number;
+    humidity: number;
+    barometricPressure: number;
+    cargoStatus: string;
+    time: number;
 }
 
 interface DataItem {
-  event: string;
-  ship: string;
-  fingerprint: string;
-  ciphertext: string;
-  tag: string;
-  iv: string;
-  data_account: string;
-  ciphertext_timestamp_unix: number;
-  ciphertext_timestamp_date: {
-    $date: string;
-  };
+    event: string;
+    ship: string;
+    fingerprint: string;
+    ciphertext: string;
+    tag: string;
+    iv: string;
+    data_account: string;
+    ciphertext_timestamp_unix: number;
+    ciphertext_timestamp_date: {
+        $date: string;
+    };
 }
 
 const getDefaultSensorData = (): SensorData => ({
@@ -53,31 +54,32 @@ const getDefaultSensorData = (): SensorData => ({
 
 // Decrypt data AES-256-GCM
 export const decrypt = (
-  ciphertext: string,
-  tag: string,
-  iv: string,
-  key: crypt.CipherKey
+    ciphertext: string,
+    tag: string,
+    iv: string,
+    key: crypt.CipherKey
 ) => {
-  const decipher = crypt.createDecipheriv(
-    "aes-256-gcm",
-    key,
-    Buffer.from(iv, "hex")
-  );
-  decipher.setAuthTag(Buffer.from(tag, "hex")); // Set the authentication tag
-  let decrypted = decipher.update(ciphertext, "hex", "utf8");
-  decrypted += decipher.final("utf8");
-  return decrypted;
+    const decipher = crypt.createDecipheriv(
+        "aes-256-gcm",
+        key,
+        Buffer.from(iv, "hex")
+    );
+    decipher.setAuthTag(Buffer.from(tag, "hex")); // Set the authentication tag
+    let decrypted = decipher.update(ciphertext, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
 };
 
 export default function ViewData() {
     const location = useLocation();
     const [encryptedData, setEncryptedData] = useState<DataItem[]>([]);
     const [decryptedData, setDecryptedData] = useState<SensorData[]>([]);
-    const { ship, dataAccountAddr } = location.state as { ship: string, dataAccountAddr: string };
+    const { ship, dataAccountAddreses, dataAccountTimestamps } = location.state as { ship: string, dataAccountAddreses: string[], dataAccountTimestamps: number[] };
     const [masterKeyDecrypted, setMasterKeyDecrypted] = useState<crypt.CipherKey>();
     const [blockchainFingerprints, setBlockchainFingerprints] = useState<string[]>([]);
     const [differences, setDifferences] = useState<boolean[]>([]);
-
+    const [timestamps, setTimestamps] = useState<number[]>(dataAccountTimestamps);
+    const [selectedSailingIndex, setSelectedSailingIndex] = useState<number>(dataAccountTimestamps.length - 1);
 
     // MOCK
     // const [decryptedData, setDecryptedData] = useState<SensorData[]>([
@@ -145,10 +147,8 @@ export default function ViewData() {
         try {
             const response = await fetch('http://localhost:5000/api/data');
             const result = await response.json();
-            console.log("Result: ", result);
-            console.log("Ship: ", ship);
             // TODO: New Collection for each ship on backend to remove this filter
-            const resultFiltered = result.filter((item: DataItem) => item.ship === ship);
+            const resultFiltered = result.filter((item: DataItem) => item.data_account === dataAccountAddreses[selectedSailingIndex]);
             setEncryptedData(resultFiltered);
 
             if (masterKeyDecrypted) {
@@ -183,17 +183,17 @@ export default function ViewData() {
             const interval = setInterval(() => {
                 fetchData();
             }, 2000);
-    
+
             return () => clearInterval(interval); // Cleanup interval on component unmount
         }
-    
+
         console.log("Master Key decrypted: ", masterKeyDecrypted);
-    }, [masterKeyDecrypted, ship]);
-    
+    }, [masterKeyDecrypted, ship, selectedSailingIndex]);
+
     useEffect(() => {
         const fetchFingerprints = async () => {
             try {
-                const fingerprints = await getFingerprints(dataAccountAddr);
+                const fingerprints = await getFingerprints(dataAccountAddreses[selectedSailingIndex]);
                 console.log('Fingerprints:', fingerprints);
                 setBlockchainFingerprints(fingerprints);
             } catch (error) {
@@ -226,10 +226,14 @@ export default function ViewData() {
         return hash !== blockchainFingerprints[index];
     };
 
-  const truncate = (str: string) => {
-    if (str.length <= 8) return str;
-    return `${str.slice(0, 4)}...${str.slice(-4)}`;
-  };
+    const handleSailingChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedSailingIndex(Number(event.target.value));
+    };
+
+    const truncate = (str: string) => {
+        if (str.length <= 8) return str;
+        return `${str.slice(0, 4)}...${str.slice(-4)}`;
+    };
 
     // return (
     //     <div className="table-container">
@@ -262,6 +266,16 @@ export default function ViewData() {
     // );
     return (
         <div className='view-data-table-container'>
+            <div className="combo-box-container">
+                <label htmlFor="sailings">Sailing start time:</label>
+                <select id="sailings" value={selectedSailingIndex} onChange={handleSailingChange}>
+                    {timestamps.map((timestamp, index) => (
+                        <option key={index} value={index}>
+                            {new Date(timestamp).toLocaleString()}
+                        </option>
+                    ))}
+                </select>
+            </div>
             {decryptedData.length > 0 && (
                 <table className="styled-table">
                     <thead>

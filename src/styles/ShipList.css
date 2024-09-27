@@ -18,14 +18,14 @@
   height: min-content;
   width: 100%;
   max-width: 900px;
-  margin: 100px auto;
+  margin: 30px auto;
   overflow-x: auto;
   overflow-y: auto; /* Ensure vertical scrolling */
   max-height: 80vh; /* Limit the height to 80% of the viewport height */
 }
 
 .table-container-lg {
-  max-width: 1440px;
+  max-width: 1640px;
 }
 
 .styled-table {
@@ -119,3 +119,27 @@
   overflow-y: auto; /* Ensure vertical scrolling */
   max-height: 70vh; /* Limit the height to 80% of the viewport height */
 }
+
+.combo-box-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+  }
+  
+  .combo-box-container label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-right: 10px;
+  }
+  
+  .combo-box-container select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 1px 1px 8px 3px rgba(42, 84, 133, 0.12);
+  }

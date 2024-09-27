@@ -1,5 +1,5 @@
 import { IdlAccounts, Program } from "@coral-xyz/anchor";
-import { PontNetwork } from "./pont_network";
+import { PontNetwork } from "./pont_network.ts";
 import IDL from "./idl.json";
 import { Connection } from "@solana/web3.js";
  

@@ -2,7 +2,7 @@ import { act, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { encode } from "bs58";
 import { blake3 } from "hash-wasm";
-import { program } from "../anchor/setup";
+import { program, ShipAccount } from "../anchor/setup";
 import { ProgramAccount } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { Buffer } from "buffer";
@@ -14,14 +14,7 @@ export default function ShipList() {
   const { connection } = useConnection();
   const { publicKey, signMessage } = useWallet();
   const navigate = useNavigate();
-  const [shipAccounts, setShipAccounts] = useState<
-    | ProgramAccount<{
-      ship: PublicKey;
-      shipManagement: PublicKey;
-      dataAccounts: PublicKey[];
-    }>[]
-    | null
-  >(null);
+  const [shipAccounts, setShipAccounts] = useState<ProgramAccount<ShipAccount>[] | null>(null);
 
   // MOCK DATA
   // const [shipAccounts, setShipAccounts] = useState([
@@ -107,9 +100,9 @@ export default function ShipList() {
     navigate('/view-observers', { state: { dataAccountAddress, shipAccountAddress, shipAddr } });
   };
 
-  const handleViewData = async (ship: string, dataAccountAddr: string) => {
+  const handleViewData = async (ship: string, dataAccountAddreses: string[], dataAccountTimestamps: number[]) => {
     console.log(`Viewing data for ship ${ship}`);
-    navigate("/view-data", { state: { ship, dataAccountAddr } });
+    navigate("/view-data", { state: { ship, dataAccountAddreses, dataAccountTimestamps } });
   };
 
   return (
@@ -125,7 +118,7 @@ export default function ShipList() {
                   <td className="button-container">
                     <button
                       onClick={() =>
-                        handleViewData(account.account.ship.toString(), account.account.dataAccounts.at(-1)!.toString())
+                        handleViewData(account.account.ship.toString(), account.account.dataAccounts.map(pk => pk.toString()), account.account.dataAccountStartingTimestamps.map(ts => ts.toNumber()))
                       }
                     >
                       View data

@@ -137,6 +137,10 @@
           "type": {
             "vec": "pubkey"
           }
+        },
+        {
+          "name": "timestamp",
+          "type": "u64"
         }
       ]
     },
@@ -795,6 +799,12 @@
             "name": "data_accounts",
             "type": {
               "vec": "pubkey"
+            }
+          },
+          {
+            "name": "data_account_starting_timestamps",
+            "type": {
+              "vec": "u64"
             }
           }
         ]

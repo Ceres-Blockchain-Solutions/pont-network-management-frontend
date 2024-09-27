@@ -143,6 +143,10 @@ export type PontNetwork = {
           "type": {
             "vec": "pubkey"
           }
+        },
+        {
+          "name": "timestamp",
+          "type": "u64"
         }
       ]
     },
@@ -801,6 +805,12 @@ export type PontNetwork = {
             "name": "dataAccounts",
             "type": {
               "vec": "pubkey"
+            }
+          },
+          {
+            "name": "dataAccountStartingTimestamps",
+            "type": {
+              "vec": "u64"
             }
           }
         ]
