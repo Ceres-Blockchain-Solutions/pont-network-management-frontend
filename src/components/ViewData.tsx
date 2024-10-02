@@ -7,19 +7,25 @@ import { Buffer } from "buffer";
 import { program } from "../anchor/setup";
 import { Address } from '@coral-xyz/anchor';
 import { blake3 } from 'hash-wasm';
+import { decode } from 'cbor-web';
 
-interface SensorData {
+interface Gps {
     lat: number;
     long: number;
-    mileage: number;
-    engineLoad: number;
-    fuelLevel: number;
-    seaState: string;
-    seaSurfaceTemperature: number;
-    airTemp: number;
-    humidity: number;
-    barometricPressure: number;
-    cargoStatus: string;
+}
+
+interface SensorData {
+    id: string;
+    gps: Gps;
+    mil: number;
+    eng: number;
+    fuel: number;
+    sea: string;
+    sst: number;
+    air: number;
+    hum: number;
+    bar: number;
+    cargo: string;
     time: number;
 }
 
@@ -65,15 +71,15 @@ export const decrypt = (
         Buffer.from(iv, "hex")
     );
     decipher.setAuthTag(Buffer.from(tag, "hex")); // Set the authentication tag
-    let decrypted = decipher.update(ciphertext, "hex", "utf8");
-    decrypted += decipher.final("utf8");
+    let decrypted = decipher.update(ciphertext, "hex", "hex");
+    decrypted += decipher.final("hex");
     return decrypted;
 };
 
 export default function ViewData() {
     const location = useLocation();
-    const [encryptedData, setEncryptedData] = useState<DataItem[]>([]);
-    const [decryptedData, setDecryptedData] = useState<SensorData[]>([]);
+    const [encryptedBatch, setEncryptedBatch] = useState<DataItem[]>([]);
+    const [decryptedBatch, setDecryptedBatch] = useState<SensorData[][]>([]);
     const { ship, dataAccountAddreses, dataAccountTimestamps } = location.state as { ship: string, dataAccountAddreses: string[], dataAccountTimestamps: number[] };
     const [masterKeyDecrypted, setMasterKeyDecrypted] = useState<crypt.CipherKey>();
     const [blockchainFingerprints, setBlockchainFingerprints] = useState<string[]>([]);
@@ -149,7 +155,7 @@ export default function ViewData() {
             const result = await response.json();
             // TODO: New Collection for each ship on backend to remove this filter
             const resultFiltered = result.filter((item: DataItem) => item.data_account === dataAccountAddreses[selectedSailingIndex]);
-            setEncryptedData(resultFiltered);
+            setEncryptedBatch(resultFiltered);
 
             if (masterKeyDecrypted) {
                 // Decrypt data
@@ -158,14 +164,17 @@ export default function ViewData() {
                     console.log('Decrypting data: ', item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
                     try {
                         const decrypted = decrypt(item.ciphertext, item.tag, item.iv, masterKeyDecrypted);
-                        return JSON.parse(decrypted);
+                        console.log("TEST DECRYPTED: ", decrypted);
+                        const decoded = decode(decrypted);
+                        console.log("TEST DECODED: ", decoded);
+                        return decoded;
                     } catch (error) {
                         console.error('Error decrypting or parsing data:', error);
                         return getDefaultSensorData();
                     }
                 });
-                console.log('Decrypted data:', _decryptedData);
-                setDecryptedData(_decryptedData);
+                console.log('Decrypted batch:', _decryptedData);
+                setDecryptedBatch(_decryptedData);
 
                 // Log decrypted data
                 _decryptedData.forEach((item, index) => {
@@ -203,8 +212,8 @@ export default function ViewData() {
 
         const compareFingerprints = async () => {
             const diffs = [];
-            for (let i = 0; i < encryptedData.length; i++) {
-                diffs[i] = await isDifferent(encryptedData[i].ciphertext, i);
+            for (let i = 0; i < encryptedBatch.length; i++) {
+                diffs[i] = await isDifferent(encryptedBatch[i].ciphertext, i);
             }
             console.log('Diffs:', diffs);
             setDifferences(diffs);
@@ -212,7 +221,7 @@ export default function ViewData() {
 
         fetchFingerprints();
         compareFingerprints();
-    }, [encryptedData]);
+    }, [encryptedBatch]);
 
     const getFingerprints = async (dataAccountAddress: Address) => {
         const dataAccount = await program.account.dataAccount.fetch(dataAccountAddress);
@@ -276,7 +285,7 @@ export default function ViewData() {
                     ))}
                 </select>
             </div>
-            {decryptedData.length > 0 && (
+            {decryptedBatch.length > 0 && (
                 <table className="styled-table">
                     <thead>
                         <tr>
@@ -295,21 +304,39 @@ export default function ViewData() {
                         </tr>
                     </thead>
                     <tbody>
-                        {decryptedData.map((data, index) => (
-                            <tr key={index} className={differences[index] ? 'red-row' : ''}>
-                                <td>{data.lat}</td>
-                                <td>{data.long}</td>
-                                <td>{data.mileage}</td>
-                                <td>{data.engineLoad}</td>
-                                <td>{data.fuelLevel}</td>
-                                <td>{data.seaState}</td>
-                                <td>{data.seaSurfaceTemperature}</td>
-                                <td>{data.airTemp}</td>
-                                <td>{data.humidity}</td>
-                                <td>{data.barometricPressure}</td>
-                                <td>{data.cargoStatus}</td>
-                                <td>{new Date(data.time).toLocaleString()}</td>
-                            </tr>
+                        {decryptedBatch.map((batch, batchIndex) => (
+                            Array.isArray(batch) ? (
+                                batch.map((data, dataIndex) => (
+                                    <tr key={`${batchIndex}-${dataIndex}`} className={differences[batchIndex] ? 'red-row' : ''}>
+                                        <td>{data.gps.lat.toFixed(2)}</td>
+                                        <td>{data.gps.long.toFixed(2)}</td>
+                                        <td>{data.mil.toFixed(2)}</td>
+                                        <td>{data.eng.toFixed(2)}</td>
+                                        <td>{data.fuel.toFixed(2)}</td>
+                                        <td>{data.sea}</td>
+                                        <td>{data.sst.toFixed(2)}</td>
+                                        <td>{data.air.toFixed(2)}</td>
+                                        <td>{data.hum.toFixed(2)}</td>
+                                        <td>{data.bar.toFixed(2)}</td>
+                                        <td>{data.cargo}</td>
+                                        <td>{new Date(data.time).toLocaleString()}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr key={`default-${batchIndex}`} className="red-row">
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>N/A</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>0.00</td>
+                                    <td>N/A</td>
+                                </tr>
+                            )
                         ))}
                     </tbody>
                 </table>
