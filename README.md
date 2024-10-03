@@ -1,6 +1,7 @@
 # Pont Network Ship Management Frontend
 
-This repository contains the code for the Pont Network Ship Management frontend, providing a user interface for ship management to approve access to data, view data, and verify its integrity.
+This repository contains the code for the Pont Network Ship Management frontend, which provides a user interface for managing ships, approving access to data, viewing data, and verifying its integrity.
+
 <br/>
 
 ## Ships for which the connected wallet is the Ship Manager
