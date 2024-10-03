@@ -274,36 +274,37 @@ export default function ViewData() {
     //     </div>
     // );
     return (
-        <div className='view-data-table-container'>
-            <div className="combo-box-container">
-                <label htmlFor="sailings">Sailing start time:</label>
-                <select id="sailings" value={selectedSailingIndex} onChange={handleSailingChange}>
-                    {timestamps.map((timestamp, index) => (
-                        <option key={index} value={index}>
-                            {new Date(timestamp).toLocaleString()}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            {decryptedBatch.length > 0 && (
-                <table className="styled-table">
-                    <thead>
-                        <tr>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Mileage</th>
-                            <th>Engine Load</th>
-                            <th>Fuel Level</th>
-                            <th>Sea State</th>
-                            <th>Sea Surface Temperature</th>
-                            <th>Air Temperature</th>
-                            <th>Humidity</th>
-                            <th>Barometric Pressure</th>
-                            <th>Cargo Status</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+		<div className="main-container">
+			<div className="combo-box-container">
+				<label htmlFor="sailings">Sailing start time:</label>
+				<select id="sailings" value={selectedSailingIndex} onChange={handleSailingChange}>
+					{timestamps.map((timestamp, index) => (
+						<option key={index} value={index}>
+							{new Date(timestamp).toLocaleString()}
+						</option>
+					))}
+				</select>
+			</div>
+			<div className="table-container table-container-lg">
+				{decryptedBatch.length > 0 && (
+					<table className="styled-table">
+						<thead>
+							<tr>
+								<th>Latitude</th>
+								<th>Longitude</th>
+								<th>Mileage</th>
+								<th>Engine Load</th>
+								<th>Fuel Level</th>
+								<th>Sea State</th>
+								<th>Sea Surface Temperature</th>
+								<th>Air Temperature</th>
+								<th>Humidity</th>
+								<th>Barometric Pressure</th>
+								<th>Cargo Status</th>
+								<th>Time</th>
+							</tr>
+						</thead>
+						<tbody>
                         {decryptedBatch.map((batch, batchIndex) => (
                             Array.isArray(batch) ? (
                                 batch.map((data, dataIndex) => (
@@ -339,8 +340,9 @@ export default function ViewData() {
                             )
                         ))}
                     </tbody>
-                </table>
-            )}
-        </div>
-    );
+					</table>
+				)}
+			</div>
+		</div>
+	);
 }
